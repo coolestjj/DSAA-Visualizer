@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+</head>
+
+<body>
+
+    <svg width="500" height="400"></svg>
+    <input type="button" value="排序" onclick="maopaosort()">
+</body>
+
+<script>
+    var showconf = { "left": 50, "top": 50, "bom": 50, "right": 50, "width": 50 };
+    var dataset = [9, 8, 7, 6, 5, 4, 3, 2, 1];
+
+    async function maopaosort() {
+        function sleep(time){
+          return new Promise((resolve) => setTimeout(resolve, time));
+        }
+        for (var i = 0; i < dataset.length; i++) {
+           for (var k = i; k < dataset.length; k++) {
+                   if (dataset[i] > dataset[k]) {
+                       let t = dataset[i];
+                       dataset[i] = dataset[k];
+                       dataset[k] = t;
+                       rectshow();
+                       textshow();
+                       await sleep(500);
+                   }
+               }
+        }
+    }
+    rectshow();
+    textshow();
+
+    function rectshow() {
+        //获取数据绑定后的三种情况
+        var selection = d3.select("svg").selectAll("rect").data(dataset);
+        var enter = selection.enter();
+        var exit = selection.exit();
+        //绑定上数据的元素处理方法
+        selection.attr("x", function (d, i) {
+            return i * 50 + showconf["left"];
+        }).attr("y", function (d, i) {
+            return 200 - d * 10 - showconf["bom"];
+        }).attr("width", 30)
+            .attr("height", function (d, i) {
+                return d * 10;
+            }).attr("fill", "blue");
+        //比元素多的数据处理方法
+        enter.append("rect")
+            .attr("x", function (d, i) {
+                return i * 50 + showconf["left"];
+            }).attr("y", function (d, i) {
+                return 200 - d * 10 - showconf["bom"];
+            }).attr("width", 30)
+            .attr("height", function (d, i) {
+                return d * 10;
+            }).attr("fill", "red");
+        //比数据多的元素
+        exit.remove();
+    }
+
+    function textshow() {
+        //获取数据绑定后的三种情况
+        var selection = d3.select("svg").selectAll("text").data(dataset);
+        var enter = selection.enter();
+        var exit = selection.exit();
+        //绑定上数据的元素处理方法
+        selection.attr("x", function (d, i) {
+            return i * 50 + showconf["left"];
+        }).attr("y", function (d, i) {
+            return 200 - d * 10 - showconf["bom"];
+        }).attr("font-size", "14px")
+            .attr("text-anchor", "middle")
+            .attr("width", "30px")
+            .attr("dx", 15)
+            .text(function (d) {
+                return d;
+            });
+        //比元素多的数据处理方法
+        enter.append("text")
+            .attr("x", function (d, i) {
+                return i * 50 + showconf["left"];
+            }).attr("y", function (d, i) {
+                return 200 - d * 10 - showconf["bom"];
+            }).attr("font-size", "14px")
+            .attr("text-anchor", "middle")
+            .attr("width", "30px")
+            .attr("dx", 15)
+            .text(function (d) {
+                return d;
+            });
+        exit.remove();
+    }
+
+</script>
+
+</html>
