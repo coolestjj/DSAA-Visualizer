@@ -10,14 +10,14 @@
 <body>
 
     <svg width="500" height="400"></svg>
-    <input type="button" value="排序" onclick="maopaosort()">
+    <input type="button" value="排序" onclick="bubbleSort()">
 </body>
 
 <script>
     var showconf = { "left": 50, "top": 50, "bom": 50, "right": 50, "width": 50 };
     var dataset = [9, 8, 7, 6, 5, 4, 3, 2, 1];
 
-    async function maopaosort() {
+    async function bubbleSort() {
         function sleep(time){
           return new Promise((resolve) => setTimeout(resolve, time));
         }
