@@ -2,22 +2,30 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-const width = 500
-const height = 500
+function bubbleSort(array) {
+  let messages = []
+  for (let k = 0; k < array.length; k++) {
+    for (let i = 0 ; i < array.length - 1 - k; i++) {
+      if (array[i] > array[i + 1]) {
+        let tmp = array[i]
+        array[i] = array[i + 1]
+        array[i + 1] = tmp
+      }
+      let message = {
+        "i": i,
+        "j": i + 1,
+        "res": array.slice()
+      }
+      messages.push(JSON.stringify(message))
+    }
+  }
+  return messages
+}
 
-const svg = d3.select('body')
-              .append('svg')
-              .attr('width', width)
-              .attr('height', height)
-
-
-const array1 = [35, 70, 24, 86, 59]
-const array2 = [35, 24, 70, 86, 59]
-
-async function run() {
+function paintOrigin(svg) {
 
   svg.selectAll('rect')
-    .data(array1, (d) => d)
+    .data(origin, (d) => d)
     .join('rect')
     .attr('width', 25)
     .attr('height', (d) => d)
@@ -25,39 +33,73 @@ async function run() {
     .attr('y', 20)
 
   svg.selectAll('text')
-     .data(array1, (d) => d)
-     .join('text')
-     .attr('x', (_, i) => i * 30 + 3)
-     .attr('y', 32)
-     .attr('fill', 'white')
-     .text((d) => d)
+      .data(origin, (d) => d)
+      .join('text')
+      .attr('x', (_, i) => i * 30 + 3)
+      .attr('y', 32)
+      .attr('fill', 'white')
+      .text((d) => d)
 
-  await sleep(1000)
+}
 
-  svg.selectAll('rect')
-     .filter(':nth-child(2), :nth-child(3)')
-     .attr('fill', 'red')
+async function paintMsg(svg, msg) {
+  const message = JSON.parse(msg)
+  const i = message.i + 1
+  const j = message.j + 1
+  const res = message.res
 
   await sleep(500)
 
   svg.selectAll('rect')
-    .data(array2, (d) => d)
+     .filter(`:nth-child(${i}), :nth-child(${j})`)
+     .attr('fill', 'red')
+
+
+  await sleep(500)
+
+
+  svg.selectAll('rect')
+    .data(res, (d) => d)
     .join(
       enter => enter,
       update =>
-          update.call(update => update.transition(svg.transition().duration(750))
+          update.call(update => update.transition(svg.transition().duration(500))
                                 .attr("x", (_, i) => i * 30)),
       exit => exit
     )
 
   svg.selectAll('text')
-     .data(array2, (d) => d)
+     .data(res, (d) => d)
      .join(
         enter => enter,
-        update => update.call(update => update.transition(svg.transition().duration(750))
+        update => update.call(update => update.transition(svg.transition().duration(500))
                                               .attr('x', (_, i) => i * 30 + 3)),
         exit => exit
      )
+  await sleep(500)
+
+  svg.selectAll('rect')
+     .filter(`:nth-child(${i}), :nth-child(${j})`)
+     .attr('fill', 'black')
+}
+
+const width = 500
+const height = 500
+
+const origin = Array.from({length: 10}, () => Math.floor(Math.random() * 100) + 20)
+
+async function run() {
+
+  const svg = d3.select('body')
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height)
+  paintOrigin(svg)
+  const messages = bubbleSort(origin)
+  for (let i = 0; i < messages.length; i++) {
+    paintMsg(svg, messages[i])
+    await sleep(2000)
+  }
 }
 
 run()
