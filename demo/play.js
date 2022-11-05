@@ -5,7 +5,7 @@ function sleep(ms) {
 function bubbleSort(array) {
   let messages = []
   for (let k = 0; k < array.length; k++) {
-    for (let i = 0 ; i < array.length - 1 - k; i++) {
+    for (let i = 0; i < array.length - 1 - k; i++) {
       if (array[i] > array[i + 1]) {
         let tmp = array[i]
         array[i] = array[i + 1]
@@ -33,12 +33,12 @@ function paintOrigin(svg) {
     .attr('y', 20)
 
   svg.selectAll('text')
-      .data(origin, (d) => d)
-      .join('text')
-      .attr('x', (_, i) => i * 30 + 3)
-      .attr('y', 32)
-      .attr('fill', 'white')
-      .text((d) => d)
+    .data(origin, (d) => d)
+    .join('text')
+    .attr('x', (_, i) => i * 30 + 3)
+    .attr('y', 32)
+    .attr('fill', 'white')
+    .text((d) => d)
 
 }
 
@@ -51,8 +51,8 @@ async function paintMsg(svg, msg) {
   await sleep(500)
 
   svg.selectAll('rect')
-     .filter(`:nth-child(${i}), :nth-child(${j})`)
-     .attr('fill', 'red')
+    .filter(`:nth-child(${i}), :nth-child(${j})`)
+    .attr('fill', 'red')
 
 
   await sleep(500)
@@ -63,37 +63,37 @@ async function paintMsg(svg, msg) {
     .join(
       enter => enter,
       update =>
-          update.call(update => update.transition(svg.transition().duration(500))
-                                .attr("x", (_, i) => i * 30)),
+        update.call(update => update.transition(svg.transition().duration(500))
+          .attr("x", (_, i) => i * 30)),
       exit => exit
     )
 
   svg.selectAll('text')
-     .data(res, (d) => d)
-     .join(
-        enter => enter,
-        update => update.call(update => update.transition(svg.transition().duration(500))
-                                              .attr('x', (_, i) => i * 30 + 3)),
-        exit => exit
-     )
+    .data(res, (d) => d)
+    .join(
+      enter => enter,
+      update => update.call(update => update.transition(svg.transition().duration(500))
+        .attr('x', (_, i) => i * 30 + 3)),
+      exit => exit
+    )
   await sleep(500)
 
   svg.selectAll('rect')
-     .filter(`:nth-child(${i}), :nth-child(${j})`)
-     .attr('fill', 'black')
+    .filter(`:nth-child(${i}), :nth-child(${j})`)
+    .attr('fill', 'black')
 }
 
 const width = 500
 const height = 500
 
-const origin = Array.from({length: 10}, () => Math.floor(Math.random() * 100) + 20)
+const origin = Array.from({ length: 10 }, () => Math.floor(Math.random() * 100) + 20)
 
 async function run() {
 
   const svg = d3.select('body')
-                .append('svg')
-                .attr('width', width)
-                .attr('height', height)
+    .append('svg')
+    .attr('width', width)
+    .attr('height', height)
   paintOrigin(svg)
   const messages = bubbleSort(origin)
   for (let i = 0; i < messages.length; i++) {
