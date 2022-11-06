@@ -9,17 +9,29 @@ function bubbleSort(array) {
       let isSwap = false
 
       if (array[i] > array[i + 1]) {
-        let tmp = array[i]
-        array[i] = array[i + 1]
-        array[i + 1] = tmp
+        [array[i], array[i + 1]] = [array[i + 1], array[i]];
         isSwap = true
       }
-      let message = {
-        "left": i,
-        "right": i + 1,
-        "result": array.slice(),
-        "isSwap": isSwap
+      
+      let message;
+      if (i == array.length - 2 - k) {
+        message = {
+          "left": i,
+          "right": i + 1,
+          "result": array.slice(),
+          "isSwap": isSwap,
+          "finished": array.length - 1 - k
+        }
+      } else {
+        message = {
+          "left": i,
+          "right": i + 1,
+          "result": array.slice(),
+          "isSwap": isSwap,
+          "finished": null
+        }
       }
+      
       messages.push(JSON.stringify(message))
     }
   }
@@ -51,6 +63,7 @@ function init() {
                  .attr('fill', 'black')
 
   textRects.append('rect')
+           .attr('id', (_, i) => `rect${i}`)
            .attr('x', (_, i) => i * (rectWidth + padding))
            .attr('y', (d) => innerHeight - d)
            .attr('width', rectWidth)
@@ -63,10 +76,14 @@ function init() {
            .text(d => d)
 }
 
+function complete(key) {
+  mainGroup.select(`#textRect${key}`).select('rect').attr('fill', 'orange');
+}
+
 
 async function run() {
   init()
-  let messages = bubbleSort(origin.slice())
+  let messages = bubbleSort(origin.slice());
   
   for(const msg of messages) {
     const message = JSON.parse(msg)
@@ -74,6 +91,7 @@ async function run() {
     const left = message.left
     const right = message.right
     const isSwap = message.isSwap
+    const finished = message.finished
 
     const leftId = `textRect${left}`
     const rightId = `textRect${right}`
@@ -110,6 +128,8 @@ async function run() {
     await sleep(500)
     rectLeft.attr('fill', 'black')
     rectRight.attr('fill', 'black')
+
+    complete(finished);
   }
 
 
