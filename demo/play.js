@@ -12,9 +12,9 @@ function bubbleSort(array) {
         array[i + 1] = tmp
       }
       let message = {
-        "i": i,
-        "j": i + 1,
-        "res": array.slice()
+        "left": i,
+        "right": i + 1,
+        "result": array.slice()
       }
       messages.push(JSON.stringify(message))
     }
@@ -22,84 +22,92 @@ function bubbleSort(array) {
   return messages
 }
 
-function paintOrigin(svg) {
-
-  svg.selectAll('rect')
-    .data(origin, (d) => d)
-    .join('rect')
-    .attr('width', 25)
-    .attr('height', (d) => d)
-    .attr('x', (_, i) => i * 30)
-    .attr('y', 20)
-
-  svg.selectAll('text')
-      .data(origin, (d) => d)
-      .join('text')
-      .attr('x', (_, i) => i * 30 + 3)
-      .attr('y', 32)
-      .attr('fill', 'white')
-      .text((d) => d)
-
-}
-
-async function paintMsg(svg, msg) {
-  const message = JSON.parse(msg)
-  const i = message.i + 1
-  const j = message.j + 1
-  const res = message.res
-
-  await sleep(500)
-
-  svg.selectAll('rect')
-     .filter(`:nth-child(${i}), :nth-child(${j})`)
-     .attr('fill', 'red')
-
-
-  await sleep(500)
-
-
-  svg.selectAll('rect')
-    .data(res, (d) => d)
-    .join(
-      enter => enter,
-      update =>
-          update.call(update => update.transition(svg.transition().duration(500))
-                                .attr("x", (_, i) => i * 30)),
-      exit => exit
-    )
-
-  svg.selectAll('text')
-     .data(res, (d) => d)
-     .join(
-        enter => enter,
-        update => update.call(update => update.transition(svg.transition().duration(500))
-                                              .attr('x', (_, i) => i * 30 + 3)),
-        exit => exit
-     )
-  await sleep(500)
-
-  svg.selectAll('rect')
-     .filter(`:nth-child(${i}), :nth-child(${j})`)
-     .attr('fill', 'black')
-}
-
-const width = 500
-const height = 500
-
-const origin = Array.from({length: 10}, () => Math.floor(Math.random() * 100) + 20)
-
 async function run() {
 
-  const svg = d3.select('body')
-                .append('svg')
-                .attr('width', width)
-                .attr('height', height)
-  paintOrigin(svg)
-  const messages = bubbleSort(origin)
-  for (let i = 0; i < messages.length; i++) {
-    paintMsg(svg, messages[i])
-    await sleep(2000)
+  const svg = d3.select('svg')
+  const width = svg.attr('width')
+  const height = svg.attr('height')
+  const margin = {top: 60, right: 30, bottom: 60, left: 30}
+  const innerWidth = width - margin.right - margin.left
+  const innerHeight = height - margin.top - margin.bottom
+  const rectWidth = 30
+  const padding = 10
+  const mainGroup = svg.append('g')
+  .attr('id', 'mainGroup')
+  .attr('transform', `translate(${margin.left}, ${margin.top})`)
+
+  const origin = Array.from({length: 10}, () => Math.floor(Math.random() * 100) + 20)
+  origin.push(origin[0])
+
+  let textRects = mainGroup.selectAll('g')
+                 .data(origin, (d, i) => `${d} ${i}`)
+                 .join('g')
+                 .attr('id', (_, i) => `textRect${i}`)
+                 .attr('class', 'textRect')
+                 .attr('fill', 'black')
+
+  textRects.append('rect')
+           .attr('x', (_, i) => i * (rectWidth + padding))
+           .attr('y', (d) => innerHeight - d)
+           .attr('width', rectWidth)
+           .attr('height', (d) => d)
+  textRects.append('text')
+           .attr('x', (_, i) => i * (rectWidth + padding) + 4)
+           .attr('y', (d) => innerHeight - d - 2)
+           .text(d => d)
+
+  let messages = bubbleSort(origin.slice())
+  
+  for(const msg of messages) {
+    const message = JSON.parse(msg)
+
+    const left = message.left
+    const right = message.right
+    const result = message.result
+
+    const textRectLeft = mainGroup.select(`#textRect${left}`)
+    const textRectRight = mainGroup.select(`#textRect${right}`)
+
+    textRects.data(result, (d, i) => `${d} ${i}`)
+      .join(
+        enter => {
+          const textRect = enter.append('g')
+              .attr('id', (_, i) => `textRect${i}`)
+              .attr('class', 'textRect')
+              .attr('fill', 'black')
+
+          textRect.append('rect')
+           .attr('x', (_, i) => ( i === left ? textRectRight : textRectLeft ).select('rect').attr('x'))
+           .attr('y', (d) => innerHeight - d)
+           .attr('width', rectWidth)
+           .attr('height', (d) => d)
+           .transition()
+           .attr('x', (_, i) => i * (rectWidth + padding))
+
+          textRect.append('text')
+           .attr('x', (_, i) => ( i === left ? textRectRight : textRectLeft ).select('text').attr('x'))
+           .attr('y', (d) => innerHeight - d - 2)
+           .text(d => d)
+           .transition()
+           .attr('x', (_, i) => i * (rectWidth + padding) + 4)
+
+          return textRect
+        },
+        update => update.select('rect'),
+        exit => exit.remove()
+      )
+
+    await sleep(1000)
   }
+
+
 }
 
+// mainGroup.selectAll('.textRect')
+// .data(res)
+
+
+// async function run() {
+// }
+//
 run()
