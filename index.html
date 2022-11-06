@@ -18,20 +18,20 @@
     var dataset = [9, 8, 7, 6, 5, 4, 3, 2, 1];
 
     async function bubbleSort() {
-        function sleep(time){
-          return new Promise((resolve) => setTimeout(resolve, time));
+        function sleep(time) {
+            return new Promise((resolve) => setTimeout(resolve, time));
         }
         for (var i = 0; i < dataset.length; i++) {
-           for (var k = i; k < dataset.length; k++) {
-                   if (dataset[i] > dataset[k]) {
-                       let t = dataset[i];
-                       dataset[i] = dataset[k];
-                       dataset[k] = t;
-                       rectshow();
-                       textshow();
-                       await sleep(500);
-                   }
-               }
+            for (var k = i; k < dataset.length; k++) {
+                if (dataset[i] > dataset[k]) {
+                    let t = dataset[i];
+                    dataset[i] = dataset[k];
+                    dataset[k] = t;
+                    rectshow();
+                    textshow();
+                    await sleep(500);
+                }
+            }
         }
     }
     rectshow();
@@ -39,7 +39,9 @@
 
     function rectshow() {
         //获取数据绑定后的三种情况
-        var selection = d3.select("svg").selectAll("rect").data(dataset);
+        var selection = d3.select("svg")
+            .selectAll("rect")
+            .data(dataset);
         var enter = selection.enter();
         var exit = selection.exit();
         //绑定上数据的元素处理方法
@@ -67,7 +69,9 @@
 
     function textshow() {
         //获取数据绑定后的三种情况
-        var selection = d3.select("svg").selectAll("text").data(dataset);
+        var selection = d3.select("svg")
+                          .selectAll("text")
+                          .data(dataset);
         var enter = selection.enter();
         var exit = selection.exit();
         //绑定上数据的元素处理方法

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+</head>
+
+<body>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script>
+        // const data = [1, 3, 2],
+        const data = [3, 44, 38, 5, 47, 15, 36, 26, 27, 2, 46, 4, 19, 50, 48],
+            svgWidth = 500,
+            svgHeight = 300,
+            rectWidth = 25,
+            rectGap = 5, // 矩形间的间距
+            textBottom = 10, // 文字距下方的距离
+            // 向body中添加svg节点
+            svg = d3.select('body')
+                .append('svg')
+                .attr('width', svgWidth)
+                .attr('height', svgHeight);
+
+        init();
+        bubbleSort();
+
+        // 初始化图形结构
+        function init() {
+            // 在本例中，使用比例尺，可以由d3推算传入的值，在svg中应该渲染的高度
+            const scale = d3
+                // 线性比例尺
+                .scaleLinear()
+                // 定义域（使用scale时，传入的值在domain范围内，则d3推算输出range范围内的数据）
+                .domain([0, d3.max(data)])
+                // 值域(最大渲染到svg的高度)
+                .range([d3.min(data), svgHeight - 20]);
+
+            svg.selectAll('rect')
+                .data(data)
+                .enter()
+                .append('g')
+                .append('rect')
+                .attr('width', rectWidth)
+                // d是数据中的每个元素
+                .attr('height', (d) => scale(d))
+                .attr('id', (d, i) => `rect${i}`)
+                // i表示数据索引
+                .attr('x', (d, i) => i * (rectWidth + rectGap))
+                // 怎么让矩形从底部向上开始？ 让纵轴方向向下偏移到最大纵轴的位置，是减去自己的高度
+                .attr('y', (d) => svgHeight - scale(d))
+                // 矩形填充色
+                .style('fill', 'skyblue');
+
+            svg.selectAll('text')
+                .data(data)
+                .enter()
+                .append('g')
+                .append('text')
+                .attr('id', (d, i) => `text${i}`)
+                .attr("x", (d, i) => i * (rectWidth + rectGap))
+                .attr("y", (d, i) => svgHeight - scale(d) - 5)
+                .text((d, i) => d);
+        }
+
+        // 排序主方法
+        async function bubbleSort() {
+            let i = 0,
+                j = 0;
+            // 外层循环使用定时器代替
+            const timer = d3.interval(() => {
+                if (i < data.length - 1) {
+                    if (j < data.length - 1 - i) {
+                        compare(j, j + 1);
+                        j++;
+                    } else {
+                        complete(j);
+                        i++;
+                        j = 0;
+                    }
+                } else {
+                    complete(0);
+                    timer.stop();
+                }
+            }, 1000);
+        }
+
+        function compare(key1, key2) {
+            let min = key1;
+            // 初始化颜色
+            d3.timeout(() => {
+                svg.select(`#rect${key1}`)
+                    .transition()
+                    .duration(100)
+                    .style('fill', 'green');
+                svg.select(`#rect${key2}`)
+                    .transition()
+                    .duration(100)
+                    .style('fill', 'green');
+            }, 10);
+            // 比较值的大小,交换矩形位置
+            d3.timeout(() => {
+                if (data[key1] > data[key2]) {
+                    // 交换值
+                    [data[key1], data[key2]] = [data[key2], data[key1]];
+                    move_left(key2);
+                    move_right(key1);
+                    min = key2;
+                }
+            }, 300);
+
+            d3.timeout(() => {
+                // 小值恢复颜色
+                svg.select(`#rect${min}`).style('fill', 'skyblue');
+            }, 600);
+        }
+
+        // 把矩形向右边移动
+        function move_right(key) {
+            svg
+                .select(`#rect${key}`)
+                .transition()
+                .duration(600)
+                .attr('x', (key + 1) * (rectWidth + rectGap))
+                .attr('id', `rect${key + 1}`);
+
+            svg.select(`#text${key}`)
+                .transition()
+                .duration(600)
+                .attr('x', (key + 1) * (rectWidth + rectGap))
+                .attr('id', `text${key + 1}`)
+        }
+        // 把矩形向左边移动
+        function move_left(key) {
+            svg
+                .select(`#rect${key}`)
+                .transition()
+                .duration(600)
+                .attr('x', (key - 1) * (rectWidth + rectGap))
+                .style('fill', 'skyblue')
+                .attr('id', `rect${key - 1}`);
+
+            svg
+                .select(`#text${key}`)
+                .transition()
+                .duration(600)
+                .attr('x', (key - 1) * (rectWidth + rectGap))
+                .attr('id', `text${key - 1}`);
+        }
+
+        // 循环一轮,设置最大值的颜色
+        function complete(key) {
+            svg.select(`#rect${key}`).style('fill', 'orange');
+        }
+    </script>
+</body>
+
+</html>

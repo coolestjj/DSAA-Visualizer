@@ -7,6 +7,7 @@ function bubbleSort(array) {
   for (let k = 0; k < array.length; k++) {
     for (let i = 0 ; i < array.length - 1 - k; i++) {
       let isSwap = false
+
       if (array[i] > array[i + 1]) {
         let tmp = array[i]
         array[i] = array[i + 1]
@@ -55,12 +56,13 @@ function init() {
            .attr('width', rectWidth)
            .attr('height', (d) => d)
 
+
   textRects.append('text')
            .attr('x', (_, i) => i * (rectWidth + padding) + 4)
            .attr('y', (d) => innerHeight - d - 2)
            .text(d => d)
-
 }
+
 
 async function run() {
   init()
@@ -108,7 +110,6 @@ async function run() {
     await sleep(500)
     rectLeft.attr('fill', 'black')
     rectRight.attr('fill', 'black')
-
   }
 
 
