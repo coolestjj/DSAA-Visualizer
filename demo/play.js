@@ -50,7 +50,7 @@ const mainGroup = svg.append('g')
 .attr('id', 'mainGroup')
 .attr('transform', `translate(${margin.left}, ${margin.top})`)
 
-const origin = Array.from({length: 10}, () => Math.floor(Math.random() * 100) + 20)
+const origin = Array.from({length: 4}, () => Math.floor(Math.random() * 100) + 20)
 origin.push(origin[0])
 
 function init() {
@@ -131,8 +131,8 @@ async function run() {
 
     complete(finished);
   }
-
-
+  await sleep(500);
+  complete(0)
 }
 
 run()
