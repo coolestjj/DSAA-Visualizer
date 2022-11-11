@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue 结构</title>
+</head>
+
+<body>
+    <!-- 视图 -->
+    <div id="div">
+        <div>{{name}}</div>
+        <div>{{classroom}}</div>
+        <button onclick="hi()">say hi</button>
+    </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+    // 脚本
+    var app = new Vue({
+        el: "#div", // 获取到页面中的元素
+        data: { 
+            name: "Mike",
+            classroom: "101"
+        },
+        methods: {
+            study() {
+                alert(this.name + " is at " + this.classroom);
+            }
+        }
+    });
+
+    function hi() {
+        app.study();
+    }
+</script>
+</html>

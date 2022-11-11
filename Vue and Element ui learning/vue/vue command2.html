@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>条件渲染</title>
+</head>
+
+<body>
+    <div id="div">
+        <!-- 判断num的值，对3取余 余数为0显示div1 余数为1显示div2 余数为2显示div3 -->
+        <div v-if="num % 3 == 0">div1</div>
+        <div v-else-if="num % 3 == 1">div2</div>
+        <div v-else="num % 3 == 2">div3</div>
+        <!-- 判断flag，为true才显示 -->
+        <div v-show="flag1">div4</div>
+        <div v-show="flag2">div5</div>
+    </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+    new Vue({
+        el: "#div",
+        data: {
+            num: 1,
+            flag1: false,
+            flag2: true
+        }
+    });
+</script>
+
+</html>

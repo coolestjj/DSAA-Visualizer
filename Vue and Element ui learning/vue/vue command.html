@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文本插值与绑定属性</title>
+    <style>
+        .my{
+            border: 1px solid red;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="div">
+        <!-- 直接显示msg内容 -->
+        <div>{{msg}}</div> 
+        <!-- v-html: 解析msg的html内容 -->
+        <div v-html="msg"></div>
+        <!-- v-bind：为 HTML 标签绑定属性值 -->
+        <a v-bind:href="url">百度一下</a>
+        <br>
+        <!-- 用一个:代表v-bind简写 -->
+        <a :href="url">百度一下</a>
+        <br>
+        <!-- 没有冒号就没用！ -->
+        <a href="url">百度一下</a>
+        <br>
+        <div :class="cls">我是div</div>
+
+    </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+    new Vue({
+        el: "#div",
+        data: {
+            msg: "<b>Hello Vue</b>",
+            url: "https://www.baidu.com",
+            cls: "my"
+        }
+    });
+</script>
+
+</html>
