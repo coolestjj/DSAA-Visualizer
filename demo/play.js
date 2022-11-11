@@ -63,7 +63,6 @@ function init() {
                  .attr('fill', 'black')
 
   textRects.append('rect')
-           .attr('id', (_, i) => `rect${i}`)
            .attr('x', (_, i) => i * (rectWidth + padding))
            .attr('y', (d) => innerHeight - d)
            .attr('width', rectWidth)
