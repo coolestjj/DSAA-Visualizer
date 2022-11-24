@@ -21,7 +21,6 @@ function selectionSort(array) {
                 "right": i,
                 "result": array.slice(),
                 "isSwap": isSwap,
-                "minValue":minIndex,
                 "finished": null
             }
             messages.push(JSON.stringify(message))
@@ -37,8 +36,7 @@ function selectionSort(array) {
             "right": minIndex,
             "result": array.slice(),
             "isSwap": isSwap,
-            "minValue":minIndex,
-            "finished": null
+            "finished": k
         }
         messages.push(JSON.stringify(message))
     }
@@ -102,7 +100,6 @@ async function run() {
         const right = message.right
         const isSwap = message.isSwap
         const finished = message.finished
-        const minValue = message.minValue
 
         const leftId = `textRect${left}`
         const rightId = `textRect${right}`
@@ -140,12 +137,13 @@ async function run() {
         rectLeft.attr('fill', 'black')
         rectRight.attr('fill', 'black')
 
-        complete(finished);
+        // complete(finished);
+        complete(left);
 
-        minValue(minValue);
+
     }
     await sleep(500);
-    complete(0)
+    // minValue(k);
 }
 
 run()
