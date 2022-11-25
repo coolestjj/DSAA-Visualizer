@@ -11,7 +11,6 @@ function selectionSort(array) {
         let isSwap = false
         for (let i = k + 1; i < array.length; i++) {
 
-
             if (array[i] < array[minIndex]) {
                 minIndex = i;
             }           
@@ -21,6 +20,7 @@ function selectionSort(array) {
                 "right": i,
                 "result": array.slice(),
                 "isSwap": isSwap,
+                "minValue":minIndex,
                 "finished": null
             }
             messages.push(JSON.stringify(message))
@@ -36,6 +36,7 @@ function selectionSort(array) {
             "right": minIndex,
             "result": array.slice(),
             "isSwap": isSwap,
+            "minValue":minIndex,
             "finished": k
         }
         messages.push(JSON.stringify(message))
@@ -84,13 +85,10 @@ function complete(key) {
     mainGroup.select(`#textRect${key}`).select('rect').attr('fill', 'orange');
 }
 
-function minValue(key) {
-    mainGroup.select(`#textRect${key}`).select('rect').attr('fill', 'blue');
-}
-
 
 async function run() {
     init()
+    let arraylen = origin.slice().length;
     let messages = selectionSort(origin.slice());
 
     for (const msg of messages) {
@@ -99,10 +97,11 @@ async function run() {
         const left = message.left
         const right = message.right
         const isSwap = message.isSwap
-        const finished = message.finished
+        const minValue = message.minValue
 
         const leftId = `textRect${left}`
         const rightId = `textRect${right}`
+        const minId = `textRect${minValue}`
 
         const textRectLeft = mainGroup.select('#' + leftId)
         const rectLeft = textRectLeft.select('rect')
@@ -112,9 +111,15 @@ async function run() {
         const rectRight = textRectRight.select('rect')
         const textRight = textRectRight.select('text')
 
+        const textRectMin = mainGroup.select('#' + minId)
+        const rectMin = textRectMin.select('rect')
+
         await sleep(500)
         rectLeft.attr('fill', 'red')
         rectRight.attr('fill', 'red')
+        rectMin.attr('fill', 'blue')
+
+        // isMin(minValue);
 
         if (isSwap) {
             const rectLeftX = rectLeft.attr('x')
@@ -136,14 +141,16 @@ async function run() {
         await sleep(500)
         rectLeft.attr('fill', 'black')
         rectRight.attr('fill', 'black')
+        rectMin.attr('fill', 'black')
 
+        
         // complete(finished);
         complete(left);
 
 
     }
     await sleep(500);
-    // minValue(k);
+    complete(arraylen - 1);
 }
 
 run()
