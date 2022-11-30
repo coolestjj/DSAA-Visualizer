@@ -41,11 +41,30 @@ header {
   flex: 1;
 }
 
-textarea {
+
+.user-input {
   flex: 1;
-  display: block;
+  display: flex;
+  flex-direction: column;
+}
+
+textarea {
   font-size: 20px;
   font-family: monospace;
+  flex: 1;
+}
+
+.input-control {
+  display: flex;
+  padding: 30px;  
+  justify-content: space-around;
+  margin-bottom: 50px;
+}
+
+button {
+  font-size: 20px;
+  padding: 5px;
+  cursor: pointer;
 }
 
 .output {

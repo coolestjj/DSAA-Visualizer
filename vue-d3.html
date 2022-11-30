@@ -16,7 +16,14 @@
       <button class="share">Share</button>
     </header>
     <div class="content">
-      <textarea v-model="userInput" @input="updateInput"></textarea>
+      <div class="user-input">
+        <textarea v-model="userInput" @input="checkInput"></textarea>
+        <div class="input-control">
+          <button class="start-button" @click="start">Start</button>
+          <button class="next-button" @click="next">Next</button>
+          <button class="stop-button" @click="stop">Stop</button>
+        </div>
+      </div>
       <div class="output">
         <p class="output-msg">{{errorMsg}}</p>
         <svg></svg>
