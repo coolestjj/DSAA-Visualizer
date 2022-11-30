@@ -137,6 +137,13 @@ const app = Vue.createApp({
         init(originMsg)
       }
     },
+    share() {
+      navigator.clipboard.writeText(this.userInput).then(() => {
+        alert('json copy to clipboard')
+      }, (error) => {
+        alert('cannot copy to clipboard')
+      })
+    },
     start() {
       const originMsg = JSON.parse(this.userInput)
     },
