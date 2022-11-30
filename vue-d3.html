@@ -83,7 +83,7 @@
       <button>Share</button>
     </header>
     <article>
-      <textarea v-model="userInput" @input="initSvg"></textarea>
+      <textarea v-model="userInput" @input="updateSvg"></textarea>
       <div class="output">
         <p class="output-msg">{{errorMsg}}</p>
         <svg></svg>

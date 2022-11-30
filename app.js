@@ -2,15 +2,16 @@
 const app = Vue.createApp({
   data() {
     return {
-      userInput: `{
-  "algorithm": "bubbleSort",
-  "data": [35, 12, 34, 45, 23, 10]
-}`,
+      userInput: JSON.stringify({
+        algorithm: "bubbleSort",
+        data: Array.from({length: 5}, () => Math.floor(Math.random() * 100) + 20)
+      }, null, 2),
       errorMsg: ''
     }
   },
   methods: {
-    initSvg() {
+    updateSvg() {
+      this.errorMsg = ''
       let originData = null
       try {
         originData = JSON.parse(this.userInput)
