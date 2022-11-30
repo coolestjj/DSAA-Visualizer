@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    #app {
+      display: flex;
+      flex-direction: column;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    header {
+      display: flex;
+      background-color: orange;
+      padding: 0 10px;
+      align-items: center;
+      justify-content: space-between;
+      flex: 0 1 50px;
+    }
+
+    article {
+      display: flex;
+      flex: 1;
+    }
+
+    textarea {
+      flex: 1;
+      display: block;
+    }
+
+    svg {
+      flex: 1;
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <header>
+      <p>PlayGround</p>
+      <button>Share</button>
+    </header>
+    <article>
+      <textarea v-model="userInput"></textarea>
+      <svg></svg>
+    </article>
+  </div>
+  <script src="https://d3js.org/d3.v7.min.js" defer></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js" defer></script>
+
+  <script>
+    const app = Vue.createApp({
+      data() {
+        return {
+          userInput: '',
+        }
+      }
+    }).mount('#app')
+  </script>
+</body>
+
+</html>
