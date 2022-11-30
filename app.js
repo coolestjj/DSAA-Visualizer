@@ -1,7 +1,7 @@
 const svg = d3.select('svg')
 const width = svg.node().getBoundingClientRect().width 
 const height = svg.node().getBoundingClientRect().height
-const margin = {top: 60, right: 80, bottom: 200, left: 80}
+const margin = {top: 30, right: 60, bottom: 200, left: 30}
 const innerWidth = width - margin.right - margin.left
 const innerHeight = height - margin.top - margin.bottom
 const mainGroup = svg.append('g')
@@ -48,19 +48,41 @@ function renderBubbleSort(messages) {
 }
 
 function initArray(array) {
+  const mainGroup = d3.select('#mainGroup')
+  mainGroup.selectAll('*').html('')
+
+  let textRects = mainGroup.selectAll('g')
+  .data(array, (d, i) => `${d} ${i}`)
+  .join('g')
+  .attr('id', (_, i) => `textRect${i}`)
+  .attr('class', 'textRect')
+  .attr('fill', 'black')
+
+  mainGroup.append('g')
+  .attr('id', 'left')
+  .attr('transform', `translate(${margin.left}, ${margin.top})`)
+  mainGroup.append('g')
+  .attr('id', 'bottom')
+  .attr('transform', `translate(${margin.left}, ${margin.top + innerHeight})`)
+
   const yScale = d3.scaleLinear()
                    .domain([d3.max(array), 0])
                    .range([0, innerHeight])
-  const xScale = d3.scaleLinear()
+  const xScale = d3.scaleBand()
                    .domain(Array.from(array.keys()))
                    .range([0, innerWidth])
-  
-  console.log(innerHeight)
-  console.log(innerWidth)
-
+  xScale.paddingInner(0.05)
+  xScale.paddingOuter(0.05)
   const yAxis = d3.axisLeft(yScale)
-  d3.select('svg g').call(yAxis)
-  
+  const xAxis = d3.axisBottom(xScale)
+  d3.select('#left').call(yAxis)
+  d3.select('#bottom').call(xAxis)
+
+  textRects.append('rect')
+  .attr('x', (_, i) => xScale(i) + margin.left)
+  .attr('y', (d) => yScale(d) + margin.top)
+  .attr('width', xScale.bandwidth())
+  .attr('height', (d) => innerHeight - yScale(d))
 }
 
 const algorithmTable = {
@@ -97,7 +119,7 @@ const app = Vue.createApp({
     return {
       userInput: JSON.stringify({
         algorithm: "bubbleSort",
-        data: Array.from({length: 7}, () => Math.floor(Math.random() * 100) + 20)
+        data: Array.from({length: 20}, () => Math.floor(Math.random() * 100) + 20)
       }, null, 2),
       errorMsg: ''
     }
@@ -117,7 +139,6 @@ const app = Vue.createApp({
     },
     start() {
       const originMsg = JSON.parse(this.userInput)
-      init(originMsg)
     },
     next() {
 
