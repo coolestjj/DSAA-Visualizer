@@ -26,6 +26,22 @@
       flex: 0 1 50px;
     }
 
+    p {
+      font-size: 20px;
+    }
+
+    .json-error {
+      display: inline;
+    }
+
+    button {
+      font-size: 20px;
+      font-family: serif;
+      background-color: orange;
+      border: none;
+      cursor: pointer;
+    }
+
     article {
       display: flex;
       flex: 1;
@@ -34,6 +50,20 @@
     textarea {
       flex: 1;
       display: block;
+      font-size: 20px;
+      font-family: monospace;
+    }
+
+    .output {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .output-msg {
+      padding: 10px 20px;
+      font-size: 20px;
+      font-family: monospace;
     }
 
     svg {
@@ -41,31 +71,25 @@
       display: block;
     }
   </style>
+  <script src="https://d3js.org/d3.v7.min.js" defer></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js" defer></script>
+  <script src="./app.js" defer></script>
 </head>
 
 <body>
   <div id="app">
     <header>
-      <p>PlayGround</p>
+      <p>Playground</p>
       <button>Share</button>
     </header>
     <article>
-      <textarea v-model="userInput"></textarea>
-      <svg></svg>
+      <textarea v-model="userInput" @input="initSvg"></textarea>
+      <div class="output">
+        <p class="output-msg">{{errorMsg}}</p>
+        <svg></svg>
+      </div>
     </article>
   </div>
-  <script src="https://d3js.org/d3.v7.min.js" defer></script>
-  <script src="https://unpkg.com/vue@3/dist/vue.global.js" defer></script>
-
-  <script>
-    const app = Vue.createApp({
-      data() {
-        return {
-          userInput: '',
-        }
-      }
-    }).mount('#app')
-  </script>
 </body>
 
 </html>
