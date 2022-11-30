@@ -49,7 +49,6 @@ function renderBubbleSort(messages) {
 
 function initArray(array) {
   const mainGroup = d3.select('#mainGroup')
-  mainGroup.selectAll('*').html('')
 
   let textRects = mainGroup.selectAll('g')
   .data(array, (d, i) => `${d} ${i}`)
@@ -109,6 +108,7 @@ function render(msg) {
 
 function init(msg) {
   const type = dataType[msg.algorithm]
+  if (type === undefined) return
   const data = msg.data
   initTable[type](data)
 }
@@ -126,6 +126,7 @@ const app = Vue.createApp({
   },
   methods: {
     checkInput() {
+      d3.select('#mainGroup').selectAll('*').html('')
       let originMsg = null
       this.errorMsg = ''
       try {
@@ -154,4 +155,7 @@ const app = Vue.createApp({
 
     }
   },
+  mounted() {
+    init(JSON.parse(this.userInput))
+  }
 }).mount('#app')
