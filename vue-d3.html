@@ -3,74 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    #app {
-      display: flex;
-      flex-direction: column;
-      width: 100vw;
-      height: 100vh;
-    }
-
-    header {
-      display: flex;
-      background-color: orange;
-      padding: 0 10px;
-      align-items: center;
-      justify-content: space-between;
-      flex: 0 1 50px;
-    }
-
-    p {
-      font-size: 20px;
-    }
-
-    .json-error {
-      display: inline;
-    }
-
-    button {
-      font-size: 20px;
-      font-family: serif;
-      background-color: orange;
-      border: none;
-      cursor: pointer;
-    }
-
-    article {
-      display: flex;
-      flex: 1;
-    }
-
-    textarea {
-      flex: 1;
-      display: block;
-      font-size: 20px;
-      font-family: monospace;
-    }
-
-    .output {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .output-msg {
-      padding: 10px 20px;
-      font-size: 20px;
-      font-family: monospace;
-    }
-
-    svg {
-      flex: 1;
-      display: block;
-    }
-  </style>
+  <link href="./style.css" rel="stylesheet">
   <script src="https://d3js.org/d3.v7.min.js" defer></script>
   <script src="https://unpkg.com/vue@3/dist/vue.global.js" defer></script>
   <script src="./app.js" defer></script>
@@ -79,16 +12,16 @@
 <body>
   <div id="app">
     <header>
-      <p>Playground</p>
-      <button>Share</button>
+      <p class="playground">Playground</p>
+      <button class="share">Share</button>
     </header>
-    <article>
-      <textarea v-model="userInput" @input="updateSvg"></textarea>
+    <div class="content">
+      <textarea v-model="userInput" @input="updateInput"></textarea>
       <div class="output">
         <p class="output-msg">{{errorMsg}}</p>
         <svg></svg>
       </div>
-    </article>
+    </div>
   </div>
 </body>
 

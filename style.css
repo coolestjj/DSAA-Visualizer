@@ -1,0 +1,66 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+}
+
+header {
+  display: flex;
+  background-color: orange;
+  padding: 0 10px;
+  align-items: center;
+  justify-content: space-between;
+  flex: 0 1 50px;
+}
+
+.playground {
+  font-size: 20px;
+}
+
+.json-error {
+  display: inline;
+}
+
+.share {
+  font-size: 20px;
+  font-family: serif;
+  background-color: orange;
+  border: none;
+  cursor: pointer;
+}
+
+.content {
+  display: flex;
+  flex: 1;
+}
+
+textarea {
+  flex: 1;
+  display: block;
+  font-size: 20px;
+  font-family: monospace;
+}
+
+.output {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.output-msg {
+  padding: 10px 20px;
+  font-size: 20px;
+  font-family: monospace;
+}
+
+svg {
+  flex: 1;
+  display: block;
+}
