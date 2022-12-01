@@ -161,7 +161,6 @@ const initMap = {
 
 function render(msg) {
   const messages = algorithmMap[msg.algorithm](msg.data)
-  // console.log(messages)
   renderMap[msg.algorithm](messages)
 }
 
