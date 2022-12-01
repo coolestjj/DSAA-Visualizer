@@ -143,11 +143,11 @@ function initArray(array) {
   .text(d => d)
 }
 
-const algorithmTable = {
+const algorithmMap = {
   "bubbleSort": bubbleSort,
 }
 
-const renderTable = {
+const renderMap = {
   "bubbleSort": renderBubbleSort,
 }
 
@@ -155,21 +155,21 @@ const dataType = {
   "bubbleSort": "array"
 }
 
-const initTable = {
+const initMap = {
   "array": initArray
 }
 
 function render(msg) {
-  const messages = algorithmTable[msg.algorithm](msg.data)
-  console.log(messages)
-  renderTable[msg.algorithm](messages)
+  const messages = algorithmMap[msg.algorithm](msg.data)
+  // console.log(messages)
+  renderMap[msg.algorithm](messages)
 }
 
 function init(msg) {
   const type = dataType[msg.algorithm]
   if (type === undefined) return
   const data = msg.data
-  initTable[type](data)
+  initMap[type](data)
 }
 
 
