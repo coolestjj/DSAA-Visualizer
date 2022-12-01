@@ -1,3 +1,7 @@
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 const svg = d3.select('svg')
 const width = svg.node().getBoundingClientRect().width 
 const height = svg.node().getBoundingClientRect().height
@@ -7,6 +11,29 @@ const innerHeight = height - margin.top - margin.bottom
 const mainGroup = svg.append('g')
 .attr('id', 'mainGroup')
 .attr('transform', `translate(${margin.left}, ${margin.top})`)
+
+function swap(leftId, rightId) {
+  const leftTextRect = d3.select('#' + leftId)
+  const rightTextRect = d3.select('#' + rightId)
+
+  const leftRect = leftTextRect.select('rect')
+  const leftText = leftTextRect.select('text')
+
+  const rightRect = rightTextRect.select('rect')
+  const rightText = rightTextRect.select('text')
+
+  leftTextRect.attr('id', rightId)
+  leftRect.transition().attr('x', rightRect.attr('x'))
+  leftText.transition().attr('x', rightText.attr('x'))
+
+  rightTextRect.attr('id', leftId)
+  rightRect.transition().attr('x', leftRect.attr('x'))
+  rightText.transition().attr('x', leftText.attr('x'))
+}
+
+function coloring(id, color) {
+  d3.select('#' + id).transition().attr('fill', color)
+}
 
 function bubbleSort(array) {
   let messages = []
@@ -43,8 +70,35 @@ function bubbleSort(array) {
   return messages
 }
 
-function renderBubbleSort(messages) {
+async function renderBubbleSort(messages) {
+  for(const msg of messages) {
+    const message = JSON.parse(msg)
 
+    const left = message.left
+    const right = message.right
+    const isSwap = message.isSwap
+    const finished = message.finished
+
+    let leftId = `textRect${left}`
+    let rightId = `textRect${right}`
+    let finishId = `textRect${finished}`
+
+    coloring(leftId, 'red')
+    coloring(rightId, 'red')
+
+    await sleep(500)
+
+    if (isSwap)
+      swap(leftId, rightId)
+
+    await sleep(500)
+
+    coloring(leftId, 'black')
+    coloring(rightId, 'black')
+    coloring(finishId, 'orange')
+    await sleep(500)
+  }
+  coloring('textRect0', 'orange')
 }
 
 function initArray(array) {
@@ -82,6 +136,11 @@ function initArray(array) {
   .attr('y', (d) => yScale(d) + margin.top)
   .attr('width', xScale.bandwidth())
   .attr('height', (d) => innerHeight - yScale(d))
+
+  textRects.append('text')
+  .attr('x', (_, i) => xScale(i) + margin.left + 4)
+  .attr('y', (d) => yScale(d) + margin.top - 2)
+  .text(d => d)
 }
 
 const algorithmTable = {
@@ -147,6 +206,7 @@ const app = Vue.createApp({
     },
     start() {
       const originMsg = JSON.parse(this.userInput)
+      render(originMsg)
     },
     next() {
 
