@@ -138,7 +138,7 @@ function initArray(array) {
   .attr('height', (d) => innerHeight - yScale(d))
 
   textRects.append('text')
-  .attr('x', (_, i) => xScale(i) + margin.left + 4)
+  .attr('x', (_, i) => xScale(i) + margin.left + xScale.bandwidth() / 2 - 12)
   .attr('y', (d) => yScale(d) + margin.top - 2)
   .text(d => d)
 }
