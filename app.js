@@ -144,19 +144,19 @@ function initArray(array) {
 }
 
 const algorithmMap = {
-  "bubbleSort": bubbleSort,
+  bubbleSort: bubbleSort,
 }
 
 const renderMap = {
-  "bubbleSort": renderBubbleSort,
+  bubbleSort: renderBubbleSort,
 }
 
 const dataType = {
-  "bubbleSort": "array"
+  bubbleSort: "array"
 }
 
 const initMap = {
-  "array": initArray
+  array: initArray
 }
 
 function render(msg) {
