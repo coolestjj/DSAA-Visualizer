@@ -83,3 +83,7 @@ svg {
   flex: 1;
   display: block;
 }
+
+text{
+  font-size: 20px;
+}

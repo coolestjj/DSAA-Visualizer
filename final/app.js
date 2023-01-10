@@ -8,9 +8,60 @@ const height = svg.node().getBoundingClientRect().height
 const margin = {top: 30, right: 60, bottom: 200, left: 30}
 const innerWidth = width - margin.right - margin.left
 const innerHeight = height - margin.top - margin.bottom
-const mainGroup = svg.append('g')
+svg.append('g')
 .attr('id', 'mainGroup')
 .attr('transform', `translate(${margin.left}, ${margin.top})`)
+
+function parseLink(link) {
+  const left = /^[a-zA-Z0-9]+<-*[0-9]*-+[a-zA-Z0-9]+$/g
+  const right = /^[a-zA-Z0-9]+-+[0-9]*-*>[a-zA-Z0-9]+$/g
+  const unary = /^[a-zA-Z0-9]+-+[0-9]*-+[a-zA-Z0-9]+$/g
+  const firstWord = /^[a-zA-Z0-9]+/g
+  const lastWord = /[a-zA-Z0-9]$/g
+  const number = /[0-9]+/g
+
+  if(link.match(left)) {
+    return {
+      source: link.match(lastWord).at(0),
+      target: link.match(firstWord).at(0),
+      weight: link.match(number) ? parseInt(link.match(number).at(0)) : 1,
+      isDirected: true,
+    }
+  } else if (link.match(right)) {
+    return {
+      source: link.match(firstWord).at(0),
+      target: link.match(lastWord).at(0),
+      weight: link.match(number) ? parseInt(link.match(number).at(0)) : 1,
+      isDirected: true,
+    }
+  } else if (link.match(unary)) {
+    return {
+      source: link.match(firstWord).at(0),
+      target: link.match(lastWord).at(0),
+      weight: link.match(number) ? parseInt(link.match(number).at(0)) : 1,
+      isDirected: false,
+    }
+  } else {
+    throw new SyntaxError("invalid link syntax")
+  }
+}
+
+function parseGraph(graphStrings) {
+  const links = graphStrings.map(parseLink)
+  const currentNodes = new Set()
+  links.forEach((link) => {
+    currentNodes.add(link.source)
+    currentNodes.add(link.target)
+  })
+  const nodes = Array.from(currentNodes)
+    .map((node) => {
+      return {id: node}
+    })
+  return {
+    links: links,
+    nodes: nodes
+  }
+}
 
 function swap(leftId, rightId) {
   const leftTextRect = d3.select('#' + leftId)
@@ -143,6 +194,91 @@ function initArray(array) {
   .text(d => d)
 }
 
+function intersection(x1, y1, x2, y2, r) {
+  const θ = Math.atan((y2 - y1) / (x2 - x1))
+  const a = θ >= 0 ? (y2 > y1 ? -1 : 1) : (y2 > y1 ? 1 : -1)
+  return {x: x2 + a * r * Math.cos(θ), y: y2 + a * r * Math.sin(θ)}
+}
+
+function initGraph(graphData) {
+  let graph = parseGraph(graphData.graph)
+  const mainGroup = d3.select('#mainGroup')
+  const radius = 20
+  const nodes = graph.nodes
+  const links = graph.links.map((link) => {
+    return {
+      source: nodes.find((node) => node.id === link.source),
+      target: nodes.find((node) => node.id === link.target),
+      weight: link.weight,
+      isDirected: link.isDirected
+    }
+  })
+
+  const simulation = d3.forceSimulation(nodes)
+  .force("charge", d3.forceManyBody().strength(-1024))
+  .force("center", d3.forceCenter(innerWidth / 2, innerHeight / 2))
+  .force("collision", d3.forceCollide().radius(radius))
+  .force("link", d3.forceLink(links).distance(100))
+  .force("x", d3.forceX())
+  .force("y", d3.forceY())
+  .stop();
+
+  const loading = mainGroup.append("text")
+  .attr("dy", "0.35em")
+  .attr("text-anchor", "middle")
+  .attr("font-family", "sans-serif")
+  .attr("font-size", 10)
+  .text("Simulating. One moment please…");
+
+  d3.timeout(() => {
+    loading.remove();
+
+    for (var i = 0, n = Math.ceil(Math.log(simulation.alphaMin()) / Math.log(1 - simulation.alphaDecay())); i < n; ++i) {
+      simulation.tick();
+    }
+
+    mainGroup.selectAll("line")
+    .data(links)
+    .join("line")
+      .attr("x1", (d) => d.source.x)
+      .attr("y1", (d) => d.source.y)
+      .attr("x2", (d) => d.isDirected ? intersection(d.source.x, d.source.y, d.target.x, d.target.y, radius+7).x : d.target.x)
+      .attr("y2", (d) => d.isDirected ? intersection(d.source.x, d.source.y, d.target.x, d.target.y, radius+7).y : d.target.y)
+      .attr("stroke", "#000")
+      .attr("stroke-width", 1.5)
+      .attr("marker-end", (d) => d.isDirected ? "url(#arrowhead)" : "")
+
+    mainGroup.selectAll(".line-weight")
+      .data(links)
+      .join("text")
+        .attr("class", "line-weight")
+        .attr("x", (d) => (d.source.x + d.target.x) / 2)
+        .attr("y", (d) => (d.source.y + d.target.y) / 2)
+        .text((d) => d.weight)
+
+    mainGroup.selectAll("circle")
+      .data(nodes)
+      .join("circle")
+        .attr("cx", function(d) { return d.x; })
+        .attr("cy", function(d) { return d.y; })
+        .attr("r", radius)
+        .attr("fill", "#fff")
+        .attr("stroke", "#000")
+        .attr("stroke-width", 1.5)
+
+    mainGroup.selectAll(".node-label")
+      .data(nodes)
+      .join("text")
+        .attr("class", "node-label")
+        .attr("x", (d) => d.x - 5)
+        .attr("y", (d) => d.y + 5)
+        .text((d) => d.id)
+
+  })
+  
+}
+
+
 const algorithmMap = {
   bubbleSort: bubbleSort,
 }
@@ -152,11 +288,13 @@ const renderMap = {
 }
 
 const dataType = {
-  bubbleSort: "array"
+  bubbleSort: "array",
+  dfs: "graph",
 }
 
 const initMap = {
-  array: initArray
+  array: initArray,
+  graph: initGraph,
 }
 
 function render(msg) {
@@ -175,16 +313,22 @@ function init(msg) {
 const app = Vue.createApp({
   data() {
     return {
-      userInput: JSON.stringify({
-        algorithm: "bubbleSort",
-        data: Array.from({length: 20}, () => Math.floor(Math.random() * 100) + 20)
-      }, null, 2),
+      // userInput: JSON.stringify({
+      //   algorithm: "bubbleSort",
+      //   data: Array.from({length: 20}, () => Math.floor(Math.random() * 100) + 20)
+      // }, null, 2),
+      userInput: `{
+  "algorithm": "dfs",
+  "data": {
+    "graph": ["A--B", "B--C", "C--D", "D--A"]
+  }
+}`,
       errorMsg: ''
     }
   },
   methods: {
     checkInput() {
-      d3.select('#mainGroup').selectAll('*').html('')
+      d3.select('#mainGroup').selectAll('*').remove()
       let originMsg = null
       this.errorMsg = ''
       try {
@@ -192,8 +336,14 @@ const app = Vue.createApp({
       } catch (error) {
         this.errorMsg = error.toString()
       }
-      if (originMsg !== null) {
+
+      if (originMsg === null)
+        return
+
+      try {
         init(originMsg)
+      } catch (error) {
+        this.errorMsg = error.toString()
       }
     },
     share() {
