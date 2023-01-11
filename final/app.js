@@ -55,7 +55,7 @@ function parseGraph(graphStrings) {
   })
   const nodes = Array.from(currentNodes)
     .map((node) => {
-      return {id: node}
+      return {id: node, color: "black"}
     })
   return {
     links: links,
@@ -121,6 +121,43 @@ function bubbleSort(array) {
   return messages
 }
 
+function updateNodesColor(nodes) {
+  d3.selectAll("circle")
+    .data(nodes, d => d.id)
+    .join(
+      () => {return},
+      update => update.transition().attr("stroke", d => d.color)
+    )
+}
+
+function BFS(data) {
+  const graph = parseGraph(data.graph)
+  const start = data.start
+  const messages = []
+  const currentNodes = graph.nodes.map((node) => {
+    if (node.id === start)
+      node.color = 'orange'
+    return node
+  })
+  messages.push(currentNodes.map(a => ({...a})))
+  const queue = [start]
+  while(queue.length > 0) {
+    const u = queue.shift()
+    const neighborsId = graph.links.filter(link => link.isDirected ? link.source === u : link.source === u || link.target ===u)
+    .map((link) => link.source === u ? link.target : link.source)
+    const neighbors = currentNodes.filter(node => neighborsId.includes(node.id))
+    neighbors.forEach(neighbor =>{
+      if (neighbor.color === 'black') {
+        neighbor.color = 'orange'
+        queue.push(neighbor.id)
+      }
+    })
+    currentNodes.find(node => node.id === u).color = 'red'
+    messages.push(currentNodes.map(a => ({...a})))
+  }
+  return messages
+}
+
 async function renderBubbleSort(messages) {
   for(const msg of messages) {
     const message = JSON.parse(msg)
@@ -150,6 +187,14 @@ async function renderBubbleSort(messages) {
     await sleep(500)
   }
   coloring('textRect0', 'orange')
+}
+
+async function renderBFS(messages) {
+  console.log(messages)
+  for (const msg of messages) {
+    updateNodesColor(msg)
+    await sleep(1000)
+  }
 }
 
 function initArray(array) {
@@ -215,10 +260,10 @@ function initGraph(graphData) {
   })
 
   const simulation = d3.forceSimulation(nodes)
-  .force("charge", d3.forceManyBody().strength(-1024))
+  .force("charge", d3.forceManyBody().strength(-2024))
   .force("center", d3.forceCenter(innerWidth / 2, innerHeight / 2))
   .force("collision", d3.forceCollide().radius(radius))
-  .force("link", d3.forceLink(links).distance(100))
+  .force("link", d3.forceLink(links))
   .force("x", d3.forceX())
   .force("y", d3.forceY())
   .stop();
@@ -244,8 +289,9 @@ function initGraph(graphData) {
       .attr("y1", (d) => d.source.y)
       .attr("x2", (d) => d.isDirected ? intersection(d.source.x, d.source.y, d.target.x, d.target.y, radius+7).x : d.target.x)
       .attr("y2", (d) => d.isDirected ? intersection(d.source.x, d.source.y, d.target.x, d.target.y, radius+7).y : d.target.y)
+      .attr("id", (_, i) => `link-${i}`)
       .attr("stroke", "#000")
-      .attr("stroke-width", 1.5)
+      .attr("stroke-width", 2)
       .attr("marker-end", (d) => d.isDirected ? "url(#arrowhead)" : "")
 
     mainGroup.selectAll(".line-weight")
@@ -257,14 +303,19 @@ function initGraph(graphData) {
         .text((d) => d.weight)
 
     mainGroup.selectAll("circle")
-      .data(nodes)
-      .join("circle")
-        .attr("cx", function(d) { return d.x; })
-        .attr("cy", function(d) { return d.y; })
-        .attr("r", radius)
-        .attr("fill", "#fff")
-        .attr("stroke", "#000")
-        .attr("stroke-width", 1.5)
+      .data(nodes, d => d.id)
+      .join(
+        enter => enter.append("circle")
+          .attr("cx", d => d.x)
+          .attr("cy", d => d.y)
+          .attr("r", radius)
+          .attr("id", (d) => `node-${d.id}`)
+          .attr("fill", "#fff")
+          .attr("stroke", d => d.color)
+          .attr("stroke-width", 3),
+        update => update.attr("stroke", d => d.color)
+      )
+        
 
     mainGroup.selectAll(".node-label")
       .data(nodes)
@@ -281,15 +332,17 @@ function initGraph(graphData) {
 
 const algorithmMap = {
   bubbleSort: bubbleSort,
+  bfs: BFS,
 }
 
 const renderMap = {
   bubbleSort: renderBubbleSort,
+  bfs: renderBFS,
 }
 
 const dataType = {
   bubbleSort: "array",
-  dfs: "graph",
+  bfs: "graph",
 }
 
 const initMap = {
@@ -318,9 +371,10 @@ const app = Vue.createApp({
       //   data: Array.from({length: 20}, () => Math.floor(Math.random() * 100) + 20)
       // }, null, 2),
       userInput: `{
-  "algorithm": "dfs",
+  "algorithm": "bfs",
   "data": {
-    "graph": ["A--B", "B--C", "C--D", "D--A"]
+    "graph": ["s--v", "s--r", "s--u", "t--r", "t--u", "u--y", "y--v", "v--w", "r--w", "y--x", "w--x", "w--z", "x--z"],
+    "start": "s"
   }
 }`,
       errorMsg: ''
@@ -349,7 +403,7 @@ const app = Vue.createApp({
     share() {
       navigator.clipboard.writeText(this.userInput).then(() => {
         alert('json copy to clipboard')
-      }, (error) => {
+      }, () => {
         alert('cannot copy to clipboard')
       })
     },
