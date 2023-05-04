@@ -121,6 +121,96 @@ function bubbleSort(array) {
   return messages
 }
 
+function selectionSort(array) {
+  let messages = [];
+  
+  for(let i = 0; i < array.length - 1; i++) {
+    let minIndex = i;
+    
+    for(let j = i + 1; j < array.length; j++) {
+      if(array[j] < array[minIndex]) {
+        minIndex = j;
+      }
+      
+      messages.push(JSON.stringify({
+        "left": j,
+        "right": minIndex,
+        "result": array.slice(),
+        "isSwap": false,
+        "finished": null
+      }));
+    }
+    
+    if(minIndex !== i) {
+      [array[i], array[minIndex]] = [array[minIndex], array[i]];
+      
+      messages.push(JSON.stringify({
+        "left": i,
+        "right": minIndex,
+        "result": array.slice(),
+        "isSwap": true,
+        "finished": null
+      }));
+    }
+    
+    messages.push(JSON.stringify({
+      "left": null,
+      "right": null,
+      "result": array.slice(),
+      "isSwap": false,
+      "finished": i
+    }));
+  }
+  
+  messages.push(JSON.stringify({
+    "left": null,
+    "right": null,
+    "result": array.slice(),
+    "isSwap": false,
+    "finished": array.length - 1
+  }));
+  
+  return messages;
+}
+
+async function renderSelectionSort(messages) {
+  for(const msg of messages) {
+    const message = JSON.parse(msg);
+
+    const left = message.left;
+    const right = message.right;
+    const isSwap = message.isSwap;
+    const finished = message.finished;
+
+    if(finished !== null) {
+      const finishId = `textRect${finished}`;
+      coloring(finishId, 'orange');
+    }
+
+    if(left !== null && right !== null) {
+      const leftId = `textRect${left}`;
+      const rightId = `textRect${right}`;
+      
+      coloring(leftId, 'red');
+      coloring(rightId, 'red');
+
+      await sleep(500);
+
+      if(isSwap) {
+        swap(leftId, rightId);
+      }
+
+      await sleep(500);
+
+      coloring(leftId, 'black');
+      coloring(rightId, 'black');
+    }
+  }
+  
+  coloring('textRect0', 'orange');
+}
+
+
 function updateNodesColor(nodes) {
   d3.selectAll("circle")
     .data(nodes, d => d.id)
@@ -360,18 +450,21 @@ function initGraph(graphData) {
 
 const algorithmMap = {
   bubbleSort: bubbleSort,
+  selectionSort: selectionSort,
   bfs: BFS,
   dfs: DFS,
 }
 
 const renderMap = {
   bubbleSort: renderBubbleSort,
+  selectionSort: renderSelectionSort,
   bfs: renderBFS,
   dfs: renderBFS,
 }
 
 const dataType = {
   bubbleSort: "array",
+  selectionSort: "array",
   bfs: "graph",
   dfs: "graph"
 }
