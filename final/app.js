@@ -158,6 +158,34 @@ function BFS(data) {
   return messages
 }
 
+function DFS(data) {
+  const graph = parseGraph(data.graph)
+  const start = data.start
+  const messages = []
+  const currentNodes = graph.nodes.map((node) => {
+    if (node.id === start)
+      node.color = 'orange'
+    return node
+  })
+  messages.push(currentNodes.map(a => ({...a})))
+  const stack = [start]
+  while(stack.length > 0) {
+    const u = stack.pop()
+    const neighborsId = graph.links.filter(link => link.isDirected ? link.source === u : link.source === u || link.target ===u)
+    .map((link) => link.source === u ? link.target : link.source)
+    const neighbors = currentNodes.filter(node => neighborsId.includes(node.id))
+    neighbors.forEach(neighbor =>{
+      if (neighbor.color === 'black') {
+        neighbor.color = 'orange'
+        stack.push(neighbor.id)
+      }
+    })
+    currentNodes.find(node => node.id === u).color = 'red'
+    messages.push(currentNodes.map(a => ({...a})))
+  }
+  return messages
+}
+
 async function renderBubbleSort(messages) {
   for(const msg of messages) {
     const message = JSON.parse(msg)
@@ -333,16 +361,19 @@ function initGraph(graphData) {
 const algorithmMap = {
   bubbleSort: bubbleSort,
   bfs: BFS,
+  dfs: DFS,
 }
 
 const renderMap = {
   bubbleSort: renderBubbleSort,
   bfs: renderBFS,
+  dfs: renderBFS,
 }
 
 const dataType = {
   bubbleSort: "array",
   bfs: "graph",
+  dfs: "graph"
 }
 
 const initMap = {
