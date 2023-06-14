@@ -18,6 +18,8 @@ let printOutput = '';
 let value;
 let BST;
 let payload;
+let randomBSTButton;
+let randomBSTForm;
 
 function enableUI() {
   insertForm.removeAttribute('disabled');
@@ -31,6 +33,8 @@ function enableUI() {
   printPostOrderButton.removeAttribute('disabled');
   undoButton.removeAttribute('disabled');
   animationSpeedSlider.removeAttribute('disabled');
+  randomBSTForm.removeAttribute('disabled');
+  randomBSTButton.removeAttribute('disabled');
 }
 
 function disableUI() {
@@ -45,6 +49,8 @@ function disableUI() {
   printPostOrderButton.attribute('disabled', '');
   undoButton.attribute('disabled', '');
   animationSpeedSlider.attribute('disabled', '');
+  randomBSTForm.attribute('disabled', '');
+  randomBSTButton.attribute('disabled', '');
 }
 
 function setAnimSpeed() {
@@ -61,6 +67,23 @@ function undo() {
     lastMsg = event.data[1];
   };
   undoButton.attribute('disabled', ''); // disable undo button after use.
+}
+
+function randomBST() {
+  lastMsg = '';
+  printOutput = '';
+  value = parseInt(randomBSTForm.value(), 10);
+  randomBSTForm.value('');
+  if (isNaN(value) === true) return undefined;
+  disableUI();
+  payload = ['Generate Random BST', value];
+  BST.postMessage(payload);
+  BST.onmessage = function (event) {
+    tree = event.data[0];
+    lastMsg = event.data[1];
+    if (event.data[2] === 'Finished') enableUI();
+  };
+  return 0;
 }
 
 function displayNode(curr) {
@@ -227,6 +250,9 @@ function setup() {
   printInOrderButton = addControls('Button', '中序遍历', printInOrder);
   printPostOrderButton = addControls('Button', '后序遍历', printPostOrder);
   undoButton = addControls('Button', '撤销', undo);
+  randomBSTForm = addControls('Input', '', '');
+  randomBSTButton = addControls('Button', '随机生成', randomBST);
+
   animationSpeedSliderLabel = addControls('Label', '播放速度:', '');
   animationSpeedSlider = addControls('Slider', '', setAnimSpeed);
   // END VISUALIZATION CONTROLS STUFF

@@ -379,6 +379,18 @@ function printPostOrder(node) {
   }
 }
 
+// generate a random binary search tree with n nodes
+function generateRandomBST(n) {
+  root = null;
+  for (let i = 0; i < n; i++) {
+    lastState = treeClone(root);
+    root = push(root, Math.floor(Math.random() * 100), 50, null, 'root');
+    updatePosition(root);
+    self.postMessage([root, msg, 'Finished']);
+  }
+  return root;
+}
+
 // EVENT LISTENER TO LISTEN COMMANDS FROM THE MAIN THREAD. THE TREE WILL EXECUTE EVERYTHING THE MAIN THREAD WANTS.
 // AT EACH STEP IN THE ALGORITHM, THE TREE WILL NOTIFY THE MAIN THREAD ABOUT CHANGES IN THE TREE SO THE MAIN THREAD CAN DISPLAY THE CHANGES STEP-BY-STEP TO USERS FOR EASIER UNDERSTANDING
 self.addEventListener('message', (event) => {
@@ -459,6 +471,13 @@ self.addEventListener('message', (event) => {
     }
     case 'Set Animation Speed': {
       delay = event.data[1]; // get delay value from user input (slider)
+      break;
+    }
+    case 'Generate Random BST': {
+      const n = event.data[1]; // get number of nodes from user input
+      canvasWidth = 1000; // get canvasWidth from main thread. Important for node positioning
+      root = generateRandomBST(n); // generate a random BST with n nodes
+      self.postMessage([root, '生成结束', '', 'Finished']); // let main thread know that operation has finished
       break;
     }
     default: break;
