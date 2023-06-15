@@ -258,7 +258,7 @@ function setup() {
   // END VISUALIZATION CONTROLS STUFF
 
   // SET CANVAS AND TEXT SIZE
-  const canvas = createCanvas(1024, 500);
+  const canvas = createCanvas(1024, 1000);
   canvas.parent('mainContent');
   textSize(15);
 }
