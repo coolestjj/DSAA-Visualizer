@@ -48,8 +48,10 @@
 <body>
     <div id="div">
         <el-col :span="4">
+            <!-- 让menu默认open -->
             <el-menu default-active="2" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose"
                 background-color="#545c64" text-color="#fff" active-text-color="#ffd04b">
+
                 <el-submenu index="1">
                     <template slot="title">
                         <i class="el-icon-menu"></i>
@@ -57,7 +59,10 @@
                     </template>
 
                     <el-menu-item index="1-1">
-                        <a href="./final/ArrayAndGraph/vue-d3.html" target="_blank">数组&图算法编辑器</a>
+                        <a href="./final/ArrayAndGraph/vue-d3.html" target="_blank">数组编辑器</a>
+                    </el-menu-item>
+                    <el-menu-item index="1-1">
+                        <a href="https://zhou-yicheng.github.io/DSAA-Visualizer" target="_blank">图算法编辑器</a>
                     </el-menu-item>
                     <el-menu-item index="1-2">
                         <a href="./final/SpanningTree/prim.html" target="_blank">生成树算法</a>
