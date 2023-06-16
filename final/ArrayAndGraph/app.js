@@ -490,17 +490,11 @@ function init(msg) {
 const app = Vue.createApp({
   data() {
     return {
-      // userInput: JSON.stringify({
-      //   algorithm: "bubbleSort",
-      //   data: Array.from({length: 20}, () => Math.floor(Math.random() * 100) + 20)
-      // }, null, 2),
-      userInput: `{
-  "algorithm": "bfs",
-  "data": {
-    "graph": ["s--v", "s--r", "s--u", "t--r", "t--u", "u--y", "y--v", "v--w", "r--w", "y--x", "w--x", "w--z", "x--z"],
-    "start": "s"
-  }
-}`,
+      userInput: JSON.stringify({
+        algorithm: "bubbleSort",
+        data: Array.from({length: 20}, () => Math.floor(Math.random() * 100) + 20)
+      }, null, 2),
+
       errorMsg: ''
     }
   },
